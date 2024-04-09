@@ -14,10 +14,10 @@
 
         form.classList.add('input-group','mb-3');
         input.classList.add('form-control');
-        input.placeholder = 'Введите название нового дела';
+        input.placeholder = 'Enter the name of the new case';
         buttonWraper.classList.add('input-group-append');
         button.classList.add('btn', 'btn-primary');
-        button.textContent = 'Добавить дело';
+        button.textContent = 'Add case';
         
         const checkInputValue = () => {
             if (input.value === '') {
@@ -64,9 +64,9 @@
 
         buttonGroup.classList.add('btn-group', 'btn-group-sm');
         doneButton.classList.add('btn', 'btn-success');
-        doneButton.textContent = 'Готовo';
+        doneButton.textContent = 'Done';
         deleteButton.classList.add('btn', 'btn-danger');
-        deleteButton.textContent = 'Удалить';
+        deleteButton.textContent = 'Delete';
         paragraph.classList.add('margin-bottom');
 
         buttonGroup.append(doneButton);
@@ -82,7 +82,7 @@
         };
     }
     
-    function createTOdoApp(container, title = 'Список дел', donePlans = []){
+    function createTOdoApp(container, title = 'Array of Plans', donePlans = [], storageKey = 'myPlans'){
  
         let todoAppTitle = createAppTitle(title);
         let todoItemForm = createTodoItemForm();
@@ -94,8 +94,8 @@
         container.append(todoItemForm.form);
         container.append(todoList);
         
-        if (JSON.parse(localStorage.getItem(('donePlans'))) != null){
-            for (k of JSON.parse(localStorage.getItem(('donePlans')))){
+        if (JSON.parse(localStorage.getItem((storageKey))) != null){
+            for (k of JSON.parse(localStorage.getItem((storageKey)))){
                 temp.push(k);
             }
         }
@@ -104,7 +104,7 @@
             temp.push(j);
         }
         
-        localStorage.setItem('donePlans', JSON.stringify(temp));
+        localStorage.setItem(storageKey, JSON.stringify(temp));
         for (i of temp){
             let todoItem = createTodoItem(i.name);
             
@@ -118,19 +118,19 @@
                     const index = temp.findIndex(t => t.id ===item.id);
                     if (index !== -1){
                         temp[index].done = !temp[index].done;
-                        localStorage.setItem('donePlans', JSON.stringify(temp));
+                        localStorage.setItem(storageKey, JSON.stringify(temp));
                     }
                 }
                
             })(i));
             todoItem.deleteButton.addEventListener('click', (function(item) {
                 return function() {
-                    if (confirm('Вы уверены?')) {
+                    if (confirm('Are you sure?')) {
                         todoItem.item.remove();
                         const index = temp.findIndex(t => t.id === item.id);
                         if (index !== -1) {
                             temp.splice(index, 1);
-                            localStorage.setItem('donePlans', JSON.stringify(temp));
+                            localStorage.setItem(storageKey, JSON.stringify(temp));
                         }
                     }
                 };
@@ -152,21 +152,8 @@
         let todoItem = createTodoItem(todoItemForm.input.value);
 
 
+       
 
-        todoItem.doneButton.addEventListener('click', function(){
-            todoItem.item.classList.toggle('list-group-item-success');
-            chekDoneFlag();
-
-            
-        });
-        todoItem.deleteButton.addEventListener('click', function(){
-            if (confirm('Вы уверены?')){
-                todoItem.item.remove();
-
-            }
-            
-            
-        });
         let doneFlag = false;
         todoList.append(todoItem.item);
         let chekDoneFlag= () =>{
@@ -178,12 +165,34 @@
             }
         };
      
-        let savedPlan = {name: todoItem.paragraph.textContent, done: doneFlag};
+        let savedPlan = {name: todoItem.paragraph.textContent, done: doneFlag, id: Date.now(),};
+        
         temp.push(savedPlan);
         
-        localStorage.setItem('donePlans', JSON.stringify(temp));
+        localStorage.setItem(storageKey, JSON.stringify(temp));
 
-        
+        todoItem.doneButton.addEventListener('click', function(){
+            todoItem.item.classList.toggle('list-group-item-success');
+            chekDoneFlag();
+            const index = temp.findIndex(t => t.id ===savedPlan.id);
+                    if (index !== -1){
+                        temp[index].done = !temp[index].done;
+                        localStorage.setItem(storageKey, JSON.stringify(temp));
+                    }
+
+        });
+        todoItem.deleteButton.addEventListener('click', function(){
+            if (confirm('Are you sure?')){
+                todoItem.item.remove();
+                const index = temp.findIndex(t => t.id === savedPlan.id);
+                        if (index !== -1) {
+                            temp.splice(index, 1);
+                            localStorage.setItem(storageKey, JSON.stringify(temp));
+                        }
+            }
+            
+            
+        });
 
 
        
