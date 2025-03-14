@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const themeSwitch = document.getElementById('themeSwitch');
     if (themeSwitch) {
-        themeSwitch.checked = savedTheme === 'dark'; // Correctly set checkbox state
+        themeSwitch.checked = savedTheme === 'dark'; 
 
         themeSwitch.addEventListener('change', (event) => {
             const theme = event.target.checked ? 'dark' : 'light';
