@@ -17,7 +17,7 @@
 <body class="light-background">
     <div id="my-todos" class="container mb-5">
         <nav class="nav">
-            <a href="../app.html" class="nav-link">My plans</a>
+            <a href="../index.html" class="nav-link">My plans</a>
             <a href="secondary.html" class="nav-link">Secondary plans</a>
             <a href="other.html" class="nav-link">Other plans </a>
         </nav>
@@ -35,12 +35,10 @@
 
     <div id="todo-app" class="container"></div>
 
-    <script src="../src/theme.js"></script>
+    <script src="theme.js"></script>
     <script>
-        // Apply theme from localStorage
-        const savedTheme = localStorage.getItem('theme') || 'light'; // default to light
+        const savedTheme = localStorage.getItem('theme') || 'light';
         applyTheme(savedTheme);
-
     </script>
 </body>
 </html>
