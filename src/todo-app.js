@@ -6,6 +6,45 @@
         return appTitle;
     }
 
+    function createSearchForm(onSearch) { 
+        let form =  document.createElement('form');
+        let input =  document.createElement('input');
+        let buttonWraper =  document.createElement('div');
+
+        form.classList.add('input-group','mb-3');
+        input.classList.add('form-control');
+        input.placeholder = 'Find some cases!';
+        buttonWraper.classList.add('input-group-append');
+
+
+        let timeoutId;
+
+        const debouncedSearch = (value) => {
+            clearTimeout(timeoutId); 
+            timeoutId = setTimeout(() => {
+                onSearch(value); 
+            }, 300); 
+        };
+
+        input.addEventListener('input', () => {
+            const searchTerm = input.value.trim();
+            debouncedSearch(searchTerm);
+        });
+        
+
+    
+    
+
+        form.append(input);
+        form.append(buttonWraper);
+
+        return{
+            
+            form,
+            input,
+        }
+    }
+
     function createTodoItemForm(){
         let form =  document.createElement('form');
         let input =  document.createElement('input');
@@ -88,10 +127,62 @@
         let todoItemForm = createTodoItemForm();
         let todoList = createTOdoList();
         let temp = [];
-
+        let allTasks = [];
 
         container.append(todoAppTitle);
         container.append(todoItemForm.form);
+        
+       
+        const renderTasks = (tasks) => {
+            todoList.innerHTML = '';
+            for (let i of tasks) {
+                let todoItem = createTodoItem(i.name);
+
+                if (i.done) {
+                    todoItem.item.classList.toggle('list-group-item-success');
+                }
+
+                todoItem.doneButton.addEventListener('click', (function (item) {
+                    return function () {
+                        todoItem.item.classList.toggle('list-group-item-success');
+                        const index = temp.findIndex(t => t.id === item.id);
+                        if (index !== -1) {
+                            temp[index].done = !temp[index].done;
+                            localStorage.setItem(storageKey, JSON.stringify(temp));
+                        }
+                    }
+
+                })(i));
+                todoItem.deleteButton.addEventListener('click', (function (item) {
+                    return function () {
+                        if (confirm('Are you sure?')) {
+                            todoItem.item.remove();
+                            const index = temp.findIndex(t => t.id === item.id);
+                            if (index !== -1) {
+                                temp.splice(index, 1);
+                                localStorage.setItem(storageKey, JSON.stringify(temp));
+                                allTasks = JSON.parse(localStorage.getItem(storageKey)) || [];
+                            }
+                        }
+                    };
+                })(i));
+                todoList.append(todoItem.item);
+            }
+        };
+
+       
+        const handleSearch = (searchTerm) => {
+            // Всегда получаем актуальный список задач из localStorage
+            const currentTasks = JSON.parse(localStorage.getItem(storageKey)) || [];
+            
+            const filteredTasks = currentTasks.filter(task =>
+                task.name.toLowerCase().includes(searchTerm.toLowerCase())
+            );
+            renderTasks(filteredTasks);
+        };
+
+        let todoSearchForm = createSearchForm(handleSearch); 
+        container.append(todoSearchForm.form);
         container.append(todoList);
         
         if (JSON.parse(localStorage.getItem((storageKey))) != null){
@@ -105,43 +196,8 @@
         }
         
         localStorage.setItem(storageKey, JSON.stringify(temp));
-        for (i of temp){
-            let todoItem = createTodoItem(i.name);
-            
-            if (i.done){
-                todoItem.item.classList.toggle('list-group-item-success')
-                
-            }
-            todoItem.doneButton.addEventListener('click', (function(item){
-                return function(){
-                    todoItem.item.classList.toggle('list-group-item-success');
-                    const index = temp.findIndex(t => t.id ===item.id);
-                    if (index !== -1){
-                        temp[index].done = !temp[index].done;
-                        localStorage.setItem(storageKey, JSON.stringify(temp));
-                    }
-                }
-               
-            })(i));
-            todoItem.deleteButton.addEventListener('click', (function(item) {
-                return function() {
-                    if (confirm('Are you sure?')) {
-                        todoItem.item.remove();
-                        const index = temp.findIndex(t => t.id === item.id);
-                        if (index !== -1) {
-                            temp.splice(index, 1);
-                            localStorage.setItem(storageKey, JSON.stringify(temp));
-                        }
-                    }
-                };
-            })(i)); // Передаём текущее значение i в функцию-обёртку
-            todoList.append(todoItem.item);
-        }
-        
-        
-        
-        
-
+        allTasks = JSON.parse(localStorage.getItem(storageKey)) || [];
+        renderTasks(allTasks); 
         todoItemForm.form.addEventListener('submit', function(e){
             e.preventDefault();
             
@@ -170,6 +226,8 @@
         temp.push(savedPlan);
         
         localStorage.setItem(storageKey, JSON.stringify(temp));
+        allTasks = JSON.parse(localStorage.getItem(storageKey)) || []; 
+        renderTasks(allTasks)
 
         todoItem.doneButton.addEventListener('click', function(){
             todoItem.item.classList.toggle('list-group-item-success');
@@ -188,6 +246,7 @@
                         if (index !== -1) {
                             temp.splice(index, 1);
                             localStorage.setItem(storageKey, JSON.stringify(temp));
+                            allTasks = JSON.parse(localStorage.getItem(storageKey)) || [];
                         }
             }
             
