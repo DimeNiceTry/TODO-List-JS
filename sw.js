@@ -1,16 +1,17 @@
 const CACHE_NAME = 'todo-app-v1';
+const BASE_PATH = '/TODO-List-JS';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/style.css',
-  '/src/app.js',
-  '/src/storage.js',
-  '/src/ui.js',
-  '/src/theme.js',
-  '/src/analytics.js',
-  '/manifest.json',
-  '/icons/icon-192x192.svg',
-  '/icons/icon-512x512.svg'
+  `${BASE_PATH}/`,
+  `${BASE_PATH}/index.html`,
+  `${BASE_PATH}/style.css`,
+  `${BASE_PATH}/src/app.js`,
+  `${BASE_PATH}/src/storage.js`,
+  `${BASE_PATH}/src/ui.js`,
+  `${BASE_PATH}/src/theme.js`,
+  `${BASE_PATH}/src/analytics.js`,
+  `${BASE_PATH}/manifest.json`,
+  `${BASE_PATH}/icons/icon-192x192.svg`,
+  `${BASE_PATH}/icons/icon-512x512.svg`
 ];
 
 self.addEventListener('install', event => {
